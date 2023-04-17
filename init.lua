@@ -1,4 +1,3 @@
-local formspec_ast = formspec_ast
 local Qmt = {}
 local function constructor(self)
 	setmetatable(self, Qmt)
@@ -34,14 +33,14 @@ function Qmt:_rawForEach()
 		local value = p[i]
 		if not value then return end
 		i = i + 1
-		return i, self:_resolve_path(value)
+		return i - 1, self:_resolve_path(value)
 	end
 end
 function Qmt:__index(key)
 	return Qmt[key] or self:_resolve_path(self._paths[1])[key]
 end
 function Qmt:__newindex(key, value)
-	if #self._paths then
+	if #self._paths == 1 then
 		-- Edge case not needed but a bit faster
 		self:_resolve_path(self._paths[1])[key] = value
 	else
@@ -49,4 +48,52 @@ function Qmt:__newindex(key, value)
 			elm[key] = value
 		end
 	end
+end
+function Qmt:find(needle)
+	if type(needle) == "table" then
+		local oldneedle = needle
+		local function recurseNeedle(potential, query)
+			for key, value in pairs(query) do
+				local potentialv = potential[key]
+				if type(potentialv) == "table" then
+					if not recurseNeedle(potentialv, value) then
+						return false
+					end
+				elseif potentialv ~= value then
+					return false
+				end
+			end
+			return true
+		end
+		function needle(potential)
+			return recurseNeedle(potential, oldneedle)
+		end
+	end
+	local paths = {}
+	local function recurse(path, tree)
+		for index, elm in ipairs(tree) do
+			local new_path = {}
+			if path ~= true then
+				for i, v in ipairs(path) do
+					new_path[i] = v
+				end
+			end
+			new_path[#new_path+1] = index
+			if needle(elm) then
+				paths[#paths+1] = new_path
+			end
+			recurse(new_path, elm)
+		end
+	end
+	for index, elm in self:_rawForEach() do
+		local path = self._paths[index]
+		if needle(elm) then
+			paths[#paths+1] = path
+		end
+		recurse(path, elm)
+	end
+	return constructor{
+		_raw = self._raw,
+		_paths = paths
+	}
 end
