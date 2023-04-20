@@ -49,22 +49,22 @@ function Qmt:__newindex(key, value)
 		end
 	end
 end
+local function recurseNeedle(potential, query)
+	for key, value in pairs(query) do
+		local potentialv = potential[key]
+		if type(potentialv) == "table" then
+			if not recurseNeedle(potentialv, value) then
+				return false
+			end
+		elseif potentialv ~= value then
+			return false
+		end
+	end
+	return true
+end
 function Qmt:find(needle)
 	if type(needle) == "table" then
 		local oldneedle = needle
-		local function recurseNeedle(potential, query)
-			for key, value in pairs(query) do
-				local potentialv = potential[key]
-				if type(potentialv) == "table" then
-					if not recurseNeedle(potentialv, value) then
-						return false
-					end
-				elseif potentialv ~= value then
-					return false
-				end
-			end
-			return true
-		end
 		function needle(potential)
 			return recurseNeedle(potential, oldneedle)
 		end
