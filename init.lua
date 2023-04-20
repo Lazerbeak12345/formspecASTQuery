@@ -52,11 +52,7 @@ end
 local function recurseNeedle(potential, query)
 	for key, value in pairs(query) do
 		local potentialv = potential[key]
-		if type(potentialv) == "table" then
-			if not recurseNeedle(potentialv, value) then
-				return false
-			end
-		elseif potentialv ~= value then
+		if type(potentialv) == "table" and (not recurseNeedle(potentialv, value)) or potentialv ~= value then
 			return false
 		end
 	end
