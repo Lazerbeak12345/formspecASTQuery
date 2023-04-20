@@ -62,12 +62,14 @@ local function recurseNeedle(potential, query)
 	end
 	return true
 end
+local function convert_query_to_needle(oldneedle)
+	return function (potential)
+		return recurseNeedle(potential, oldneedle)
+	end
+end
 function Qmt:find(needle)
 	if type(needle) == "table" then
-		local oldneedle = needle
-		function needle(potential)
-			return recurseNeedle(potential, oldneedle)
-		end
+		needle = convert_query_to_needle(needle)
 	end
 	local paths = {}
 	local function recurse(path, tree)
