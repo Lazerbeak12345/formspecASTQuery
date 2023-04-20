@@ -13,7 +13,7 @@ describe("wrapper", function ()
 			{ type = "label", label = "asdf" },
 			{ type = "box", color = "#aFFFFF" }
 		}
-		Q(dom):findAll{ type = "box" }.color = "#000000"
+		Q(dom):all{ type = "box" }.color = "#000000"
 		assert.same(dom, {
 			type = "container",
 			{ type = "box", color = "#000000" },
@@ -28,27 +28,27 @@ describe("wrapper", function ()
 		assert.equal(wrapped_child.type, dom[1].type, "child type is the same")
 		assert.equal(wrapped_child.color, dom[1].color, "child color is the same")
 		assert.equal(#wrapped_child, #dom[1], "child length is the same")
-		assert.truthy(wrapped_child.findAll, "child is wrapped")
+		assert.truthy(wrapped_child.all, "child is wrapped")
 		wrapped_child.color = "#000000"
 		assert.equal(wrapped_child.color, dom[1].color, "child color is still the same")
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" } }, "child was modified")
 	end)
 end)
-describe("findAll", function ()
+describe("all", function ()
 	it("can search by table", function ()
 		local dom = { type = "container", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } }
-		Q(dom):findAll{ type = "box" }.color = "#000000"
+		Q(dom):all{ type = "box" }.color = "#000000"
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } })
 	end)
 end)
-describe("findFirst", function ()
+describe("first", function ()
 	it("only finds one element", function ()
 		local dom = { type = "container", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } }
-		Q(dom):findFirst{ type = "box" }.color = "#000000"
+		Q(dom):first{ type = "box" }.color = "#000000"
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#aFFFFF" } })
 	end)
 end)
-describe("allChildren", function ()
+describe("children", function ()
 	it("finds all children of all selected elements", function ()
 		local dom = {
 			type = "container",
@@ -56,7 +56,7 @@ describe("allChildren", function ()
 			{ type = "box", color = "#bFFFFF" },
 			{ type = "container", findMe = "pls", { type = "box", color = "#cFFFFF" }, { type = "box", color = "#dFFFFF" } }
 		}
-		Q(dom):findAll{ findMe = "pls" }:allChildren().color = "#000000"
+		Q(dom):all{ findMe = "pls" }:children().color = "#000000"
 		assert.same(dom, {
 			type = "container",
 			{ type = "container", findMe = "pls", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } },
@@ -65,7 +65,7 @@ describe("allChildren", function ()
 		})
 	end)
 end)
-describe("includeFrom", function ()
+describe("include", function ()
 	it("adds elements found in a different search into this search", function ()
 		local dom = {
 			type = "container",
@@ -73,8 +73,8 @@ describe("includeFrom", function ()
 			{ type = "box", color = "#cFFFFF" },
 			{ type = "container", { type = "box", color = "#aFFFFF" }, { type = "box", color = "#bFFFFF" } }
 		}
-		local first = Q(dom):findFirst{ type = "box" }
-		Q(dom)[3]:findAll{ type = "box" }:includeFrom(first).color = "#000000"
+		local first = Q(dom):first{ type = "box" }
+		Q(dom)[3]:all{ type = "box" }:include(first).color = "#000000"
 		assert.same(dom, {
 			type = "container",
 			{ type = "box", color = "#000000" },
@@ -83,3 +83,4 @@ describe("includeFrom", function ()
 		})
 	end)
 end)
+-- TODO way to ignore Qmt when getting or setting a value
