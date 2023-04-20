@@ -13,9 +13,7 @@ describe("wrapper", function ()
 			{ type = "label", label = "asdf" },
 			{ type = "box", color = "#aFFFFF" }
 		}
-		Q(dom)
-			:findAll{ type = "box" }
-			.color = "#000000"
+		Q(dom):findAll{ type = "box" }.color = "#000000"
 		assert.same(dom, {
 			type = "container",
 			{ type = "box", color = "#000000" },
