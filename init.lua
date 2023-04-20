@@ -85,7 +85,10 @@ function Qmt:findAll(needle)
 	end
 	for index, elm in self:_rawForEach() do
 		local path = self._paths[index]
-		if needle(elm) then
+		if needle(constructor{
+			_raw = self._raw,
+			_paths = { path }
+		}) then
 			paths[#paths+1] = path
 		end
 		recurse(path, elm)
