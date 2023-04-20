@@ -94,7 +94,7 @@ function Qmt:allChildren()
 		_paths = paths
 	}
 end
--- TODO add a __length thing to the metatable
+-- TODO add a way to get number of _paths in public api
 function Qmt:findFirst(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
@@ -111,33 +111,28 @@ function Qmt:findFirst(needle)
 	end
 	return constructor{ _raw = self._raw, _paths = {} }
 end
--- TODO deduplicate code. use :allChildren() some sorta merge function
+-- TODO add some sorta merge function
 function Qmt:findAll(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
 	end
 	local paths = {}
-	local function recurse(path, tree)
-		for index, elm in ipairs(tree) do
-			local new_path = add_to_path(path, index)
-			if needle(constructor{
-				_raw = self._raw,
-				_paths = { new_path }
-			}) then
-				paths[#paths+1] = new_path
-			end
-			recurse(new_path, elm)
-		end
-	end
-	for index, elm in self:_rawForEach() do
+	for index, _ in self:_rawForEach() do
 		local path = self._paths[index]
-		if needle(constructor{
+		local elm = constructor{
 			_raw = self._raw,
 			_paths = { path }
-		}) then
+		}
+		if needle(elm) then
 			paths[#paths+1] = path
 		end
-		recurse(path, elm)
+		local children = elm:allChildren()
+		if #children._paths > 0 then
+			local recurse_result = children:findAll(needle)
+			for _, new_path in ipairs(recurse_result._paths) do
+				paths[#paths+1] = new_path
+			end
+		end
 	end
 	return constructor{ _raw = self._raw, _paths = paths }
 end
