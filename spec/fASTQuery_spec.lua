@@ -17,7 +17,7 @@ describe("wrapper", function ()
 			{ type = "box", color = "#aFFFFF" },
 		}
 		Q(dom)
-			:find({ type = "box" })
+			:find{ type = "box" }
 			.color = "#000000"
 		assert.same(dom, {
 			type = "container",
