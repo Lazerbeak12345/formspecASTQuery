@@ -94,38 +94,24 @@ function Qmt:allChildren()
 		_paths = paths
 	}
 end
--- TODO deduplicate code. use :allChildren()
+-- TODO add a __length thing to the metatable
 function Qmt:findFirst(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
 	end
-	local path
-	local function recurse(test_path, tree)
-		for index, elm in ipairs(tree) do
-			local new_path = add_to_path(test_path, index)
-			if needle(constructor{
-				_raw = self._raw,
-				_paths = { new_path }
-			}) then
-				path = new_path
-				return
-			end
-			recurse(new_path, elm)
+	for index, _ in self:_rawForEach() do
+		local test_elm = constructor{ _raw = self._raw, _paths = { self._paths[index] } }
+		if needle(test_elm) then
+			return test_elm
 		end
 	end
-	for index, elm in self:_rawForEach() do
-		local test_path = self._paths[index]
-		if needle(constructor{
-			_raw = self._raw,
-			_paths = { test_path }
-		}) then
-			path = test_path
-			break
-		end
-		recurse(test_path, elm)
+	local recurse_result = self:allChildren():findFirst(needle)
+	if #recurse_result._paths > 0 then
+		return recurse_result
 	end
-	return constructor{ _raw = self._raw, _paths = { path } }
+	return constructor{ _raw = self._raw, _paths = {} }
 end
+-- TODO deduplicate code. use :allChildren() some sorta merge function
 function Qmt:findAll(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
