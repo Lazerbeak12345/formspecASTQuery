@@ -45,3 +45,18 @@ describe("wrapper", function ()
 		}, "child was modified")
 	end)
 end)
+describe("findAll", function ()
+	it("can search by table", function ()
+		local dom = {
+			type = "container",
+			{ type = "box", color = "#FFFFFF" },
+			{ type = "box", color = "#aFFFFF" }
+		}
+		Q(dom):findAll({ type = "box" }).color = "#000000"
+		assert.same(dom, {
+			type = "container",
+			{ type = "box", color = "#000000" },
+			{ type = "box", color = "#000000" }
+		})
+	end)
+end)
