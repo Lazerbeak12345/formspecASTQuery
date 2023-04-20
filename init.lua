@@ -67,7 +67,7 @@ local function convert_query_to_needle(oldneedle)
 		return recurseNeedle(potential, oldneedle)
 	end
 end
-function Qmt:find(needle)
+function Qmt:findAll(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
 	end
