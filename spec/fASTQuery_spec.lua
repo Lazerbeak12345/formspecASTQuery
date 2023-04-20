@@ -43,3 +43,10 @@ describe("findAll", function ()
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } })
 	end)
 end)
+describe("findFirst", function ()
+	it("only finds one element", function ()
+		local dom = { type = "container", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } }
+		Q(dom):findFirst{ type = "box" }.color = "#000000"
+		assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#aFFFFF" } })
+	end)
+end)
