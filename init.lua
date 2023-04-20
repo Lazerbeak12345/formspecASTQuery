@@ -4,14 +4,9 @@ local function constructor(self)
 	return self
 end
 local function Q(input)
-	return constructor{
-		_raw = input,
-		-- A list of paths, where a path is either true (to represent the root) or a list of numbers/keys (representing the
-		-- path from the root to the node)
-		_paths = {
-			true
-		}
-	}
+	-- _paths is A list of paths, where a path is either true (to represent the root) or a list of numbers/keys
+	-- (representing the path from the root to the node)
+	return constructor{ _raw = input, _paths = { true } }
 end
 fASTQuery = Q
 function Qmt:_resolve_path(path)
@@ -114,8 +109,5 @@ function Qmt:findAll(needle)
 		end
 		recurse(path, elm)
 	end
-	return constructor{
-		_raw = self._raw,
-		_paths = paths
-	}
+	return constructor{ _raw = self._raw, _paths = paths }
 end
