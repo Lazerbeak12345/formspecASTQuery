@@ -67,3 +67,21 @@ describe("allChildren", function ()
 		})
 	end)
 end)
+describe("includeFrom", function ()
+	it("adds elements found in a different search into this search", function ()
+		local dom = {
+			type = "container",
+			{ type = "box", color = "#FFFFFF" },
+			{ type = "box", color = "#cFFFFF" },
+			{ type = "container", { type = "box", color = "#aFFFFF" }, { type = "box", color = "#bFFFFF" } }
+		}
+		local first = Q(dom):findFirst{ type = "box" }
+		Q(dom)[3]:findAll{ type = "box" }:includeFrom(first).color = "#000000"
+		assert.same(dom, {
+			type = "container",
+			{ type = "box", color = "#000000" },
+			{ type = "box", color = "#cFFFFF" },
+			{ type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } }
+		})
+	end)
+end)

@@ -94,6 +94,19 @@ function Qmt:allChildren()
 		_paths = paths
 	}
 end
+function Qmt:includeFrom(other)
+	local paths = {}
+	for _, new_path in ipairs(self._paths) do
+		paths[#paths+1] = new_path
+	end
+	for _, new_path in ipairs(other._paths) do
+		paths[#paths+1] = new_path
+	end
+	return constructor{
+		_raw = self._raw,
+		_paths = paths
+	}
+end
 -- TODO add a way to get number of _paths in public api
 function Qmt:findFirst(needle)
 	if type(needle) == "table" then
@@ -111,7 +124,6 @@ function Qmt:findFirst(needle)
 	end
 	return constructor{ _raw = self._raw, _paths = {} }
 end
--- TODO add some sorta merge function
 function Qmt:findAll(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
