@@ -4,7 +4,10 @@ describe("wrapper", function ()
 	it("wraps and references make unwrapping not needed", function ()
 		local dom = { type = "box", color = "#FFFFFF" }
 		Q(dom).color = "#000000"
-		assert.equals(dom.color, "#000000", "color was changed")
+		assert.same(dom, {
+			type = "box",
+			color = "#000000"
+		}, "color was changed")
 	end)
 	it("works with multiple nodes too!", function ()
 		local dom = {
