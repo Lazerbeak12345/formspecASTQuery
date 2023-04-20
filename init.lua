@@ -82,6 +82,18 @@ local function convert_query_to_needle(oldneedle)
 		return recurseNeedle(potential, oldneedle)
 	end
 end
+function Qmt:allChildren()
+	local paths = {}
+	for path_index, elm  in self:_rawForEach() do
+		for index, _ in ipairs(elm) do
+			paths[#paths+1] = add_to_path(self._paths[path_index], index)
+		end
+	end
+	return constructor{
+		_raw = self._raw,
+		_paths = paths
+	}
+end
 -- TODO deduplicate code. use :allChildren()
 function Qmt:findFirst(needle)
 	if type(needle) == "table" then

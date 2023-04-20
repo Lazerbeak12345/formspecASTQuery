@@ -50,3 +50,20 @@ describe("findFirst", function ()
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#aFFFFF" } })
 	end)
 end)
+describe("allChildren", function ()
+	it("finds all children of all selected elements", function ()
+		local dom = {
+			type = "container",
+			{ type = "container", findMe = "pls", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } },
+			{ type = "box", color = "#bFFFFF" },
+			{ type = "container", findMe = "pls", { type = "box", color = "#cFFFFF" }, { type = "box", color = "#dFFFFF" } }
+		}
+		Q(dom):findAll{ findMe = "pls" }:allChildren().color = "#000000"
+		assert.same(dom, {
+			type = "container",
+			{ type = "container", findMe = "pls", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } },
+			{ type = "box", color = "#bFFFFF" },
+			{ type = "container", findMe = "pls", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } }
+		})
+	end)
+end)
