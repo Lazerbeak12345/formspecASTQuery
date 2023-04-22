@@ -83,4 +83,10 @@ describe("include", function ()
 		})
 	end)
 end)
--- TODO way to ignore Qmt when getting or setting a value
+describe("get", function ()
+	it("gets a key, regardless of if that key is shadowed by this api", function ()
+		local dom = { type = "box", get = 3 }
+		assert.equal(Q(dom):get("get"), 3)
+	end)
+end)
+-- TODO add a way to get number of _paths in public api

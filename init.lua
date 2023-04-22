@@ -52,11 +52,17 @@ function Qmt:childrenAt(index)
 	end
 	return constructor{ _raw = self._raw, _paths = paths }
 end
+function Qmt:get(key)
+	assert(key, "key argument not provided")
+	local tk = type(key)
+	assert(tk == "number" or tk == "string", "key must be string or number")
+	return self:_resolve_path(self._paths[1])[key]
+end
 function Qmt:__index(key)
 	if type(key) == "number" then
 		return self:childrenAt(key)
 	end
-	return Qmt[key] or self:_resolve_path(self._paths[1])[key]
+	return Qmt[key] or self:get(key)
 end
 function Qmt:__newindex(key, value)
 	if #self._paths == 1 then
@@ -107,7 +113,6 @@ function Qmt:include(other)
 		_paths = paths
 	}
 end
--- TODO add a way to get number of _paths in public api
 function Qmt:first(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
