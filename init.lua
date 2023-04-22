@@ -30,7 +30,7 @@ function Qmt:_rawForEach()
 		local value = p[i]
 		if not value then return end
 		i = i + 1
-		return i - 1, self:_resolve_path(value)
+		return value, self:_resolve_path(value)
 	end
 end
 local function add_to_path(path, index)
@@ -48,8 +48,7 @@ end
 -- TODO unit test
 function Qmt:childrenAt(index)
 	local paths = {}
-	for path_index, elm in self:_rawForEach() do
-		local path = self._paths[path_index]
+	for path, elm in self:_rawForEach() do
 		if elm[index] then
 			paths[#paths+1] = add_to_path(path, index)
 		end
@@ -93,9 +92,9 @@ local function convert_query_to_needle(oldneedle)
 end
 function Qmt:children()
 	local paths = {}
-	for path_index, elm  in self:_rawForEach() do
+	for path, elm  in self:_rawForEach() do
 		for index, _ in ipairs(elm) do
-			paths[#paths+1] = add_to_path(self._paths[path_index], index)
+			paths[#paths+1] = add_to_path(path, index)
 		end
 	end
 	return constructor{
@@ -120,14 +119,14 @@ function Qmt:first(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
 	end
-	for index, _ in self:_rawForEach() do
-		local test_elm = constructor{ _raw = self._raw, _paths = { self._paths[index] } }
+	for path, _ in self:_rawForEach() do
+		local test_elm = constructor{ _raw = self._raw, _paths = { path } }
 		if needle(test_elm) then
 			return test_elm
 		end
 	end
 	local recurse_result = self:children():first(needle)
-	if #recurse_result._paths > 0 then
+	if #recurse_result > 0 then
 		return recurse_result
 	end
 	return constructor{ _raw = self._raw, _paths = {} }
@@ -137,8 +136,7 @@ function Qmt:all(needle)
 		needle = convert_query_to_needle(needle)
 	end
 	local paths = {}
-	for index, _ in self:_rawForEach() do
-		local path = self._paths[index]
+	for path, _ in self:_rawForEach() do
 		local elm = constructor{
 			_raw = self._raw,
 			_paths = { path }
@@ -147,7 +145,7 @@ function Qmt:all(needle)
 			paths[#paths+1] = path
 		end
 		local children = elm:children()
-		if #children._paths > 0 then
+		if #children > 0 then
 			local recurse_result = children:all(needle)
 			for _, new_path in ipairs(recurse_result._paths) do
 				paths[#paths+1] = new_path
