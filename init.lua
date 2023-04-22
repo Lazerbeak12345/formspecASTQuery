@@ -1,4 +1,5 @@
 local Qmt = {}
+-- TODO global table, indexed by raw tables, containing paths in the table. Used for things like wrap and etc.
 local function constructor(self)
 	assert(type(self._raw) == "table", "Input must be a table")
 	assert(type(self._paths) == "table", "Paths must be a list")
@@ -24,13 +25,23 @@ function Qmt:_resolve_path(path)
 	return node
 end
 function Qmt:_rawForEach()
-	local p = self._paths
+	local paths = self._paths
 	local i = 1
 	return function ()
-		local value = p[i]
-		if not value then return end
+		local path = paths[i]
+		if not path then return end
 		i = i + 1
-		return value, self:_resolve_path(value)
+		return path, self:_resolve_path(path)
+	end
+end
+function Qmt:each()
+	local paths = self._paths
+	local i = 1
+	return function ()
+		local path = paths[i]
+		if not path then return end
+		i = i + 1
+		return constructor{ _raw = self._raw, _paths = { path } }
 	end
 end
 local function add_to_path(path, index)
@@ -103,6 +114,7 @@ function Qmt:children()
 	}
 end
 function Qmt:include(other)
+	assert(self._raw == other._raw, "can only include elements from same tree")
 	local paths = {}
 	for _, new_path in ipairs(self._paths) do
 		paths[#paths+1] = new_path
@@ -119,8 +131,7 @@ function Qmt:first(needle)
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
 	end
-	for path, _ in self:_rawForEach() do
-		local test_elm = constructor{ _raw = self._raw, _paths = { path } }
+	for test_elm in self:each() do
 		if needle(test_elm) then
 			return test_elm
 		end

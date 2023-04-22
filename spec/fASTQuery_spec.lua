@@ -113,6 +113,7 @@ describe("count", function ()
 		assert.equal(container:all{ type = "box" }:count(), 3, "there are three matches")
 		assert.equal(container:first{ type = "box" }:count(), 1, "first found only just the one")
 	end)
+	-- Is this a good idea? Should it be the length of the first element instead?
 	it("supports the # length operator as a shorthand", function ()
 		local dom = {
 			type = "container",
@@ -124,5 +125,25 @@ describe("count", function ()
 		local container = Q(dom)
 		assert.equal(#container:all{ type = "box" }, 3, "there are three matches")
 		assert.equal(#container:first{ type = "box" }, 1, "first found only just the one")
+	end)
+end)
+describe("each", function ()
+	it("is an iterator returning wrapped elements", function ()
+		local dom = {
+			type = "container",
+			{ type = "container", findMe = "pls", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } },
+			{ type = "box", color = "#bFFFFF" },
+			{ type = "container", findMe = "pls", { type = "box", color = "#cFFFFF" }, { type = "box", color = "#dFFFFF" } }
+		}
+		for elm in Q(dom):all{ findMe = "pls" }:children():each() do
+			elm.color = "#000000"
+			assert.is.truthy(elm.each, "is wrapped")
+		end
+		assert.same(dom, {
+			type = "container",
+			{ type = "container", findMe = "pls", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } },
+			{ type = "box", color = "#bFFFFF" },
+			{ type = "container", findMe = "pls", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } }
+		})
 	end)
 end)
