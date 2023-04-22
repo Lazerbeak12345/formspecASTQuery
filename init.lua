@@ -1,5 +1,7 @@
 local Qmt = {}
 local function constructor(self)
+	assert(type(self._raw) == "table", "Input must be a table")
+	assert(type(self._paths) == "table", "Paths must be a list")
 	setmetatable(self, Qmt)
 	return self
 end
@@ -14,7 +16,7 @@ function Qmt:_resolve_path(path)
 	if path == true then
 		return self._raw
 	end
-	assert(path, "Path must not be null")
+	assert(path, "Path must not be nil")
 	local node = self._raw
 	for _, value in ipairs(path) do
 		node = node[value]
