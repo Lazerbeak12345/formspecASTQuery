@@ -27,13 +27,11 @@ describe("wrapper", function ()
 		assert.truthy(wrapped_child, "child found")
 		assert.equal(wrapped_child.type, dom[1].type, "child type is the same")
 		assert.equal(wrapped_child.color, dom[1].color, "child color is the same")
-		assert.equal(#wrapped_child, #dom[1], "child length is the same")
 		assert.truthy(wrapped_child.all, "child is wrapped")
 		wrapped_child.color = "#000000"
 		assert.equal(wrapped_child.color, dom[1].color, "child color is still the same")
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" } }, "child was modified")
 	end)
-	-- TODO it supports counting children using the length operator
 end)
 describe("all", function ()
 	it("can search by table", function ()
@@ -118,5 +116,17 @@ describe("count", function ()
 		local container = Q(dom)
 		assert.equal(container:all{ type = "box" }:count(), 3, "there are three matches")
 		assert.equal(container:first{ type = "box" }:count(), 1, "first found only just the one")
+	end)
+	it("supports the # length operator as a shorthand", function ()
+		local dom = {
+			type = "container",
+			{ type = "box", color = "#FFFFFF" },
+			{ type = "label", label = "hi"},
+			{ type = "box", color = "#FFFFFF" },
+			{ type = "box", color = "#FFFFFF" }
+		}
+		local container = Q(dom)
+		assert.equal(#container:all{ type = "box" }, 3, "there are three matches")
+		assert.equal(#container:first{ type = "box" }, 1, "first found only just the one")
 	end)
 end)

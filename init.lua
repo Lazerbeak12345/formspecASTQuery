@@ -71,8 +71,9 @@ end
 function Qmt:count()
 	return #self._paths
 end
+Qmt.__len = Qmt.count
 function Qmt:__newindex(key, value)
-	if self:count() == 1 then
+	if #self == 1 then
 		-- Edge case not needed but a bit faster
 		self:_resolve_path(self._paths[1])[key] = value
 	else
