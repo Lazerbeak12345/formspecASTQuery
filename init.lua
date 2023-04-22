@@ -73,13 +73,8 @@ function Qmt:count()
 end
 Qmt.__len = Qmt.count
 function Qmt:__newindex(key, value)
-	if #self == 1 then
-		-- Edge case not needed but a bit faster
-		self:_resolve_path(self._paths[1])[key] = value
-	else
-		for _, elm in self:_rawForEach() do
-			elm[key] = value
-		end
+	for _, elm in self:_rawForEach() do
+		elm[key] = value
 	end
 end
 local function recurseNeedle(potential, query)
