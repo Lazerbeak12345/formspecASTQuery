@@ -85,10 +85,10 @@ describe("include", function ()
 	end)
 end)
 -- TODO inconsistant with jQuery rename to something else
-describe("get", function ()
+describe("getKey", function ()
 	it("gets a key, regardless of if that key is shadowed by this api", function ()
 		local dom = { type = "box", get = 3 }
-		assert.equal(Q(dom):get("get"), 3)
+		assert.equal(Q(dom):getKey("get"), 3)
 	end)
 end)
 describe("count", function ()

@@ -56,7 +56,7 @@ function Qmt:childrenAt(index)
 	end
 	return constructor{ _raw = self._raw, _paths = paths }
 end
-function Qmt:get(key)
+function Qmt:getKey(key)
 	assert(key, "key argument not provided")
 	local tk = type(key)
 	assert(tk == "number" or tk == "string", "key must be string or number")
@@ -66,7 +66,7 @@ function Qmt:__index(key)
 	if type(key) == "number" then
 		return self:childrenAt(key)
 	end
-	return Qmt[key] or self:get(key)
+	return Qmt[key] or self:getKey(key)
 end
 function Qmt:count()
 	return #self._paths
