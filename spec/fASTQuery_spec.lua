@@ -96,11 +96,7 @@ describe("getKey", function ()
 		assert.equal(Q(dom):children():getKey("color"), "#FFFFFF")
 	end)
 	it("is an unalias for just getting the key conventionally", function ()
-		local dom = {
-			type = "container",
-			{ type = "box", color = "#FFFFFF" },
-			{ type = "box", color = "#aFFFFF" }
-		}
+		local dom = { type = "container", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } }
 		assert.equal(Q(dom):children().color, "#FFFFFF")
 	end)
 end)

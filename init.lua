@@ -137,10 +137,7 @@ function Qmt:all(needle)
 	end
 	local paths = {}
 	for path, _ in self:_rawForEach() do
-		local elm = constructor{
-			_raw = self._raw,
-			_paths = { path }
-		}
+		local elm = constructor{ _raw = self._raw, _paths = { path } }
 		if needle(elm) then
 			paths[#paths+1] = path
 		end
