@@ -33,6 +33,7 @@ describe("wrapper", function ()
 		assert.equal(wrapped_child.color, dom[1].color, "child color is still the same")
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" } }, "child was modified")
 	end)
+	-- TODO it supports counting children using the length operator
 end)
 describe("all", function ()
 	it("can search by table", function ()
@@ -83,10 +84,24 @@ describe("include", function ()
 		})
 	end)
 end)
+-- TODO inconsistant with jQuery rename to something else
 describe("get", function ()
 	it("gets a key, regardless of if that key is shadowed by this api", function ()
 		local dom = { type = "box", get = 3 }
 		assert.equal(Q(dom):get("get"), 3)
 	end)
 end)
--- TODO add a way to get number of _paths in public api
+describe("count", function ()
+	it("counts the number of matches made", function ()
+		local dom = {
+			type = "container",
+			{ type = "box", color = "#FFFFFF" },
+			{ type = "label", label = "hi"},
+			{ type = "box", color = "#FFFFFF" },
+			{ type = "box", color = "#FFFFFF" }
+		}
+		local container = Q(dom)
+		assert.equal(container:all{ type = "box" }:count(), 3, "there are three matches")
+		assert.equal(container:first{ type = "box" }:count(), 1, "first found only just the one")
+	end)
+end)

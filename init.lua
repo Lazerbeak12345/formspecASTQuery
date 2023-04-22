@@ -44,6 +44,8 @@ local function add_to_path(path, index)
 	new_path[#new_path+1] = index
 	return new_path
 end
+-- TODO rename to get
+-- TODO unit test
 function Qmt:childrenAt(index)
 	local paths = {}
 	for path_index, elm in self:_rawForEach() do
@@ -66,8 +68,11 @@ function Qmt:__index(key)
 	end
 	return Qmt[key] or self:get(key)
 end
+function Qmt:count()
+	return #self._paths
+end
 function Qmt:__newindex(key, value)
-	if #self._paths == 1 then
+	if self:count() == 1 then
 		-- Edge case not needed but a bit faster
 		self:_resolve_path(self._paths[1])[key] = value
 	else
