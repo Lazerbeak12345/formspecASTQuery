@@ -84,11 +84,26 @@ describe("include", function ()
 		})
 	end)
 end)
--- TODO inconsistant with jQuery rename to something else
 describe("getKey", function ()
 	it("gets a key, regardless of if that key is shadowed by this api", function ()
-		local dom = { type = "box", get = 3 }
-		assert.equal(Q(dom):getKey("get"), 3)
+		local dom = { type = "box", getKey = 3 }
+		assert.equal(Q(dom):getKey("getKey"), 3)
+	end)
+	it("only returns the first key", function()
+		local dom = {
+			type = "container",
+			{ type = "box", color = "#FFFFFF" },
+			{ type = "box", color = "#aFFFFF" }
+		}
+		assert.equal(Q(dom):children():getKey("color"), "#FFFFFF")
+	end)
+	it("is an unalias for just getting the key conventionally", function ()
+		local dom = {
+			type = "container",
+			{ type = "box", color = "#FFFFFF" },
+			{ type = "box", color = "#aFFFFF" }
+		}
+		assert.equal(Q(dom):children().color, "#FFFFFF")
 	end)
 end)
 describe("count", function ()
