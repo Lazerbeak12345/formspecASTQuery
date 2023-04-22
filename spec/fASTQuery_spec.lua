@@ -1,5 +1,5 @@
 dofile('init.lua')
-local Q = fASTQuery
+local Q, describe, it = fASTQuery, describe, it
 describe("wrapper", function ()
 	it("wraps and references make unwrapping not needed", function ()
 		local dom = { type = "box", color = "#FFFFFF" }
