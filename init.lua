@@ -128,6 +128,9 @@ function Qmt:include(other)
 	}
 end
 function Qmt:first(needle)
+	if not needle then
+		return self[1] -- MaAAAaaajick
+	end
 	if type(needle) == "table" then
 		needle = convert_query_to_needle(needle)
 	end

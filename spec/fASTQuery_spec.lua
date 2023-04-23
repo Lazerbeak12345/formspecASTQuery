@@ -46,6 +46,12 @@ describe("first", function ()
 		Q(dom):first{ type = "box" }.color = "#000000"
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#aFFFFF" } })
 	end)
+	it("gives the first element when no args", function ()
+		local dom = { type = "container", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } }
+		-- Remember, all is slow. This is bad. Don't do this, just do :first(pattern). Reduce first, then pattern
+		Q(dom):all{ type = "box" }:first().color = "#000000"
+		assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#aFFFFF" } })
+	end)
 end)
 describe("children", function ()
 	it("finds all children of all selected elements", function ()
