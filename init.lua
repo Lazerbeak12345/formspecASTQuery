@@ -136,9 +136,9 @@ function Qmt:first(needle)
 			return test_elm
 		end
 	end
-	local recurse_result = self:children():first(needle)
-	if #recurse_result > 0 then
-		return recurse_result
+	local children = self:children()
+	if #children > 0 then
+		return children:first(needle)
 	end
 	return constructor{ _raw = self._raw, _paths = {} }
 end
