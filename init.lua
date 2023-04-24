@@ -57,7 +57,7 @@ local function add_to_path(path, index)
 end
 -- TODO rename to get
 -- TODO unit test
-function Qmt:childrenAt(index)
+function Qmt:_childrenAt(index)
 	local paths = {}
 	for path, elm in self:_rawForEach() do
 		if elm[index] then
@@ -74,7 +74,7 @@ function Qmt:getKey(key)
 end
 function Qmt:__index(key)
 	if type(key) == "number" then
-		return self:childrenAt(key)
+		return self:_childrenAt(key)
 	end
 	return Qmt[key] or self:getKey(key)
 end
