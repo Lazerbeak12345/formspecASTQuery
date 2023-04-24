@@ -52,6 +52,10 @@ describe("first", function ()
 		Q(dom):all{ type = "box" }:first().color = "#000000"
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#aFFFFF" } })
 	end)
+	it("provides a way to tell if none were found", function ()
+		local dom = { type = "container", { type = "label", label = "lol" } }
+		assert.equal(#Q(dom):first{ type = "box" }, 0, "none should be found")
+	end)
 end)
 describe("children", function ()
 	it("finds all children of all selected elements", function ()
