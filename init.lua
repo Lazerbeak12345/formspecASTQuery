@@ -81,7 +81,9 @@ end
 function Qmt:count()
 	return #self._paths
 end
-Qmt.__len = Qmt.count
+function Qmt:__len()
+	return #self:_resolve_path(self._paths[1])
+end
 function Qmt:__newindex(key, value)
 	for _, elm in self:_rawForEach() do
 		elm[key] = value
@@ -140,7 +142,7 @@ function Qmt:first(needle)
 		end
 	end
 	local children = self:children()
-	if #children > 0 then
+	if children:count() > 0 then
 		return children:first(needle)
 	end
 	return constructor{ _raw = self._raw, _paths = {} }
@@ -156,7 +158,7 @@ function Qmt:all(needle)
 			paths[#paths+1] = path
 		end
 		local children = elm:children()
-		if #children > 0 then
+		if children:count() > 0 then
 			local recurse_result = children:all(needle)
 			for _, new_path in ipairs(recurse_result._paths) do
 				paths[#paths+1] = new_path

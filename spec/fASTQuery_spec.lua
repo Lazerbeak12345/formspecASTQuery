@@ -32,6 +32,15 @@ describe("wrapper", function ()
 		assert.equal(wrapped_child.color, dom[1].color, "child color is still the same")
 		assert.same(dom, { type = "container", { type = "box", color = "#000000" } }, "child was modified")
 	end)
+	it("supports getting number of children for first match using #", function ()
+		local dom = {
+			type = "container",
+			{ type = "box", color = "#FFFFFF"},
+			{ type = "box", color = "#FFFFFF"},
+			{ type = "box", color = "#FFFFFF"}
+		}
+		assert.equal(#Q(dom), 3)
+	end)
 end)
 describe("all", function ()
 	it("can search by table", function ()
@@ -54,7 +63,7 @@ describe("first", function ()
 	end)
 	it("provides a way to tell if none were found", function ()
 		local dom = { type = "container", { type = "label", label = "lol" } }
-		assert.equal(#Q(dom):first{ type = "box" }, 0, "none should be found")
+		assert.equal(Q(dom):first{ type = "box" }:count(), 0, "none should be found")
 	end)
 end)
 describe("children", function ()
@@ -122,19 +131,6 @@ describe("count", function ()
 		local container = Q(dom)
 		assert.equal(container:all{ type = "box" }:count(), 3, "there are three matches")
 		assert.equal(container:first{ type = "box" }:count(), 1, "first found only just the one")
-	end)
-	-- Is this a good idea? Should it be the length of the first element instead?
-	it("supports the # length operator as a shorthand", function ()
-		local dom = {
-			type = "container",
-			{ type = "box", color = "#FFFFFF" },
-			{ type = "label", label = "hi"},
-			{ type = "box", color = "#FFFFFF" },
-			{ type = "box", color = "#FFFFFF" }
-		}
-		local container = Q(dom)
-		assert.equal(#container:all{ type = "box" }, 3, "there are three matches")
-		assert.equal(#container:first{ type = "box" }, 1, "first found only just the one")
 	end)
 end)
 describe("each", function ()
