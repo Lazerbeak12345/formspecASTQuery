@@ -55,8 +55,6 @@ local function add_to_path(path, index)
 	new_path[#new_path+1] = index
 	return new_path
 end
--- TODO rename to get
--- TODO unit test
 function Qmt:_childrenAt(index)
 	local paths = {}
 	for path, elm in self:_rawForEach() do
