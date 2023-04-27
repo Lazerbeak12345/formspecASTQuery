@@ -153,3 +153,29 @@ describe("each", function ()
 		})
 	end)
 end)
+describe("parents", function ()
+	it("returns the parents of each element", function ()
+		local dom = {
+			type = "container",
+			{ type = "container", { type = "box", color = "#FFFFFF" } },
+			{ type = "container", { type = "box", color = "#FFFFFF" } }
+		}
+		Q(dom):all{ type = "box" }:parents().type = "vbox"
+		assert.same(dom, {
+			type = "container",
+			{ type = "vbox", { type = "box", color = "#FFFFFF" } },
+			{ type = "vbox", { type = "box", color = "#FFFFFF" } }
+		})
+	end)
+	it("does not match duplicates", function ()
+		local dom = {
+			type = "container",
+			{ type = "container", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#FFFFFF" } }
+		}
+		local count = 0
+		for _ in Q(dom):all{ type = "box" }:parents():each() do
+			count = count + 1
+		end
+		assert.equal(1, count)
+	end)
+end)

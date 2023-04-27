@@ -55,6 +55,15 @@ local function add_to_path(path, index)
 	new_path[#new_path+1] = index
 	return new_path
 end
+local function remove_from_path(path)
+	local new_path = {}
+	for i, v in ipairs(path) do
+		if i ~= #path then
+			new_path[i] = v
+		end
+	end
+	return new_path
+end
 function Qmt:_childrenAt(index)
 	local paths = {}
 	for path, elm in self:_rawForEach() do
@@ -161,6 +170,20 @@ function Qmt:all(needle)
 			for _, new_path in ipairs(recurse_result._paths) do
 				paths[#paths+1] = new_path
 			end
+		end
+	end
+	return constructor{ _raw = self._raw, _paths = paths }
+end
+function Qmt:parents()
+	local paths = {}
+	local unique = {}
+	for path, _ in self:_rawForEach() do
+		local new_path = remove_from_path(path)
+		local raw_elm = self:_resolve_path(new_path)
+		-- Tables are always a reference. Indexing by table reference is like indexing by number.
+		if not unique[raw_elm] then
+			paths[#paths+1] = new_path
+			unique[raw_elm] = true
 		end
 	end
 	return constructor{ _raw = self._raw, _paths = paths }
