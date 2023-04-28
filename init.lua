@@ -188,3 +188,8 @@ function Qmt:parents()
 	end
 	return constructor{ _raw = self._raw, _paths = paths }
 end
+function Qmt:append(child)
+	for _, elm in self:_rawForEach() do
+		elm[#elm+1] = child
+	end
+end

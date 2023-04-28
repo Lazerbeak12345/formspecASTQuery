@@ -182,4 +182,16 @@ describe("manipulation", function ()
 			assert.equal(Q(dom):children().color, "#FFFFFF")
 		end)
 	end)
+	describe("append", function ()
+		it("inserts a new DOM element at the end", function ()
+			local dom = { type = "container", { type = "label", label = "hi" } }
+			Q(dom):append{ type = "box", color = "#FFFFFF" }
+			assert.same(dom, {
+				type = "container",
+				{ type = "label", label = "hi" },
+				{ type = "box", color = "#FFFFFF" }
+			})
+		end)
+	end)
+	-- TODO insert (take the last two [or one] arguments from table.insert)
 end)
