@@ -83,7 +83,13 @@ describe("navigation", function ()
 			local dom = { type = "container", { type = "label", label = "lol" } }
 			assert.equal(Q(dom):first{ type = "box" }:count(), 0, "none should be found")
 		end)
-		-- TODO it can accept a function
+		it("can accept a function", function ()
+			local dom = { type = "container", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } }
+			Q(dom):first(function (elm)
+				return elm.type == "box"
+			end).color = "#000000"
+			assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#aFFFFF" } })
+		end)
 	end)
 	describe("children", function ()
 		it("finds all children of all selected elements", function ()
