@@ -1,8 +1,73 @@
+local function path_is__(a, b)
+	-- 1 is gt, 0 is same, -1 is lt
+	if a == b then return 0 end
+	-- true is the shortest possible path
+	if a == true then return -1 end
+	if b == true then return 1 end
+	-- This means that [] < [1] < [2] < [1,1] < [2,1], but it's consistant and fast, so I'm keeping it for now.
+	if #a > #b then return 1 end
+	if #b > #a then return -1 end
+	for i, av in ipairs(a) do
+		if av > b[i] then return 1 end
+		if av < b[i] then return -1 end
+	end
+	return 0
+end
+-- global table, indexed by raw tables, containing paths in the table. Used for things like wrap and etc.
+local global_paths_by_table = {}
+local function binary_search_global_paths(global_paths, needle, low, high)
+	if not low then
+		low = 1
+	end
+	if not high then
+		high = #global_paths
+	end
+	if high >= low then
+		local mid = math.floor((high + low) / 2)
+		local mid_item = global_paths[mid]
+		local rel = path_is__(needle, mid_item)
+		if rel == 0 then -- eq
+			return mid
+		elseif rel == 1 then -- gt
+			return binary_search_global_paths(global_paths, needle, mid + 1, high)
+		else -- lt
+			return binary_search_global_paths(global_paths, needle, high, mid - 1)
+		end
+	end
+	return nil, low, high -- not found. Return nearest two
+end
+local function ensure_paths_in_global_paths(raw, paths)
+	if not global_paths_by_table[raw] then
+		global_paths_by_table[raw] = {}
+	end
+	local global_paths = global_paths_by_table[raw]
+	for passed_path_index, path in ipairs(paths) do
+		local index, new_index = binary_search_global_paths(global_paths, path)
+		if not index and new_index then -- not found
+			table.insert(global_paths, new_index, path)
+		elseif global_paths[index] ~= path then
+			-- if the paths are the same, but not same table reference, ensure linking by changing that
+			paths[passed_path_index] = global_paths[index]
+		end
+	end
+end
+local function replace_last_node_in_path(path, new_index)
+	if path ~= true then
+		local new_path = {}
+		for i, v in ipairs(path) do
+			new_path[i] = v
+		end
+		new_path[#new_path] = new_index
+		return new_path
+	else
+		return { new_index }
+	end
+end
 local Qmt = {}
--- TODO global table, indexed by raw tables, containing paths in the table. Used for things like wrap and etc.
 local function constructor(self)
 	assert(type(self._raw) == "table", "Input must be a table")
 	assert(type(self._paths) == "table", "Paths must be a list")
+	ensure_paths_in_global_paths(self._raw, self._paths)
 	setmetatable(self, Qmt)
 	return self
 end
@@ -189,7 +254,41 @@ function Qmt:parents()
 	return constructor{ _raw = self._raw, _paths = paths }
 end
 function Qmt:append(child)
-	for _, elm in self:_rawForEach() do
-		elm[#elm+1] = child
+	local paths = {}
+	for path, elm in self:_rawForEach() do
+		local new_index = #elm+1
+		elm[new_index] = child
+		paths[#paths+1] = replace_last_node_in_path(path, new_index)
+	end
+	ensure_paths_in_global_paths(self._raw, paths)
+end
+function Qmt:insert(index, value)
+	if not value then return self:append(index) end -- Index is the value in this case
+	local global_paths = global_paths_by_table[self._raw]
+	for parent_path, elm in self:_rawForEach() do
+		table.insert(elm, index, value)
+		local new_path = add_to_path(parent_path, index)
+		local found_gindex, new_gindex = binary_search_global_paths(global_paths, new_path)
+		-- found_gindex will be nil if not found. even if it's found, it needs increased.
+		local starting_gindex = found_gindex or new_gindex or -1
+		assert(starting_gindex ~= -1, "impossible binary search failure")
+		for gindex=starting_gindex,#global_paths do
+			-- If the path is
+			-- - A sibling after the new item
+			-- - A child of a sibling of the new item
+			-- Siblings (and children of siblings) share the same first path parts as their common ansestor
+			local gpath = global_paths[gindex]
+			local match = true
+			for i, v in ipairs(parent_path) do
+				if gpath[i] ~= v then
+					match = false
+				end
+			end
+			if match then
+				gpath[#parent_path] = gpath[#parent_path] + 1
+			end
+		end
+		-- This is a new path -- we know it can'tve been present already, since this is a new node.
+		table.insert(global_paths, starting_gindex, new_path)
 	end
 end

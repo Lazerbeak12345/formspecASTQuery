@@ -49,6 +49,8 @@ describe("navigation", function ()
 			Q(dom):all{ type = "box" }.color = "#000000"
 			assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } })
 		end)
+		-- TODO if no args provided, return all
+		-- TODO it can accept a function
 	end)
 	describe("first", function ()
 		it("only finds one element", function ()
@@ -162,6 +164,7 @@ describe("navigation", function ()
 			assert.equal(1, count)
 		end)
 	end)
+	--TODO slice (or something that performs subsets on _path, by a good name)
 end)
 describe("manipulation", function ()
 	describe("getKey", function ()
@@ -193,5 +196,36 @@ describe("manipulation", function ()
 			})
 		end)
 	end)
-	-- TODO insert (take the last two [or one] arguments from table.insert)
+	-- insert (take the last two [or one] arguments from table.insert)
+	describe("insert", function ()
+		it("inserts a new DOM element at a given location", function ()
+			local dom = {
+				type = "container",
+				{ type = "label", label = "hi" },
+				{ type = "label", label = "hi1" }
+			}
+			Q(dom):insert(2, { type = "box", color = "#FFFFFF" })
+			assert.same(dom, {
+				type = "container",
+				{ type = "label", label = "hi" },
+				{ type = "box", color = "#FFFFFF" },
+				{ type = "label", label = "hi1" }
+			})
+		end)
+		it("falls back to append() if no index", function ()
+			local dom = { type = "container", { type = "label", label = "hi" } }
+			Q(dom):insert{ type = "box", color = "#FFFFFF" }
+			assert.same({
+				type = "container",
+				{ type = "label", label = "hi" },
+				{ type = "box", color = "#FFFFFF" }
+			}, dom)
+		end)
+	end)
+	-- TODO remove
+	-- TODO replaceWith
+	-- TODO wrap
+	-- TODO unwrap
+	-- TODO before
+	-- TODO after
 end)
