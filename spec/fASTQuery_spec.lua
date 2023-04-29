@@ -49,7 +49,16 @@ describe("navigation", function ()
 			Q(dom):all{ type = "box" }.color = "#000000"
 			assert.same(dom, { type = "container", { type = "box", color = "#000000" }, { type = "box", color = "#000000" } })
 		end)
-		-- TODO if no args provided, return all
+		it("returns all if no args provided", function ()
+			local dom = { type = "container", { type = "box", color = "#FFFFFF" }, { type = "box", color = "#aFFFFF" } }
+			Q(dom):all().k = "v"
+			assert.same({
+				type = "container",
+				k = "v",
+				{ type = "box", color = "#FFFFFF", k = "v" },
+				{ type = "box", color = "#aFFFFF", k = "v" }
+			}, dom)
+		end)
 		-- TODO it can accept a function
 	end)
 	describe("first", function ()

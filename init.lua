@@ -220,8 +220,13 @@ function Qmt:first(needle)
 	return constructor{ _raw = self._raw, _paths = {} }
 end
 function Qmt:all(needle)
-	if type(needle) == "table" then
+	local tn = type(needle)
+	if tn == "table" then
 		needle = convert_query_to_needle(needle)
+	elseif tn == "nil" then
+		needle = function ()
+			return true
+		end
 	end
 	local paths = {}
 	for path, _ in self:_rawForEach() do
